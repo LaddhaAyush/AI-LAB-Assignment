@@ -1,58 +1,58 @@
-import java.util.Arrays;
+import java.util.*;
 
-class GraphColoring {
-    static final int V = 4;
+public class Main {
 
-    static boolean isSafe(int v, int[][] graph, int[] color, int c) {
-        for (int i = 0; i < V; i++) {
-            if (graph[v][i] == 1 && color[i] == c) 
-                return false;
-        }
-        return true;
-    }
-
-    static boolean graphColoringUtil(int[][] graph, int m, int[] color, int v) {
-        if (v == V) 
-            return true;
-
-        for (int c = 1; c <= m; c++) {
-            if (isSafe(v, graph, color, c)) {
-                color[v] = c;
-
-                if (graphColoringUtil(graph, m, color, v + 1)) 
-                    return true;
-
-                color[v] = 0;
-            }
-        }
+  // Function to check if it's safe to color vertex with a given color
+  public static boolean isSafe(int[][] graph, int[] color, int vertex, int c) {
+    for (int i = 0; i < graph.length; i++) {
+      if (graph[vertex][i] == 1 && color[i] == c) {
         return false;
+      }
+    }
+    return true;
+  }
+
+  // Recursive function to try assigning colors
+  public static boolean graphColoring(int[][] graph, int m, int[] color, int vertex) {
+    int n = graph.length;
+    
+    if (vertex == n) {
+      // All vertices colored successfully
+      for (int i = 0; i < n; i++) {
+        System.out.println("Vertex " + i + " -> Color " + color[i]);
+      }
+      System.out.println();
+      return true;
     }
 
-    static boolean graphColoring(int[][] graph, int m) {
-        int[] color = new int[V];
-        Arrays.fill(color, 0);
+    boolean res = false;
 
-        if (!graphColoringUtil(graph, m, color, 0)) {
-            System.out.println("Solution does not exist");
-            return false;
-        }
-
-        System.out.println("Solution exists:");
-        for (int i = 0; i < V; i++)
-            System.out.println("Vertex " + i + " ---> Color " + color[i]);
-
-        return true;
+    // Try all colors for this vertex
+    for (int c = 1; c <= m; c++) {
+      if (isSafe(graph, color, vertex, c)) {
+        color[vertex] = c;
+        res = graphColoring(graph, m, color, vertex + 1) || res;
+        color[vertex] = 0; // Backtrack
+      }
     }
 
-    public static void main(String[] args) {
-        int[][] graph = {
-            {0, 1, 1, 1},
-            {1, 0, 1, 0},
-            {1, 1, 0, 1},
-            {1, 0, 1, 0}
-        };
+    return res;
+  }
 
-        int m = 3;
-        graphColoring(graph, m);
+  public static void main(String[] args) {
+    // Sample graph represented as adjacency matrix
+    int[][] graph = {
+      {0, 1, 1, 1},
+      {1, 0, 1, 0},
+      {1, 1, 0, 1},
+      {1, 0, 1, 0}
+    };
+    
+    int m = 3; // Number of colors
+    int[] color = new int[graph.length];
+
+    if (!graphColoring(graph, m, color, 0)) {
+      System.out.println("No solution exists");
     }
+  }
 }
